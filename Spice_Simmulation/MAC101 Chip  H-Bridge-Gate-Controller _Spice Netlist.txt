@@ -1,0 +1,59 @@
+*** SPICE deck for cell MAC101{sch} from library CMOScells
+*** Created on Sun Dec 29, 2024 21:16:32
+*** Last revised on Sun Dec 29, 2024 23:10:12
+*** Written on Sun Dec 29, 2024 23:10:22 by Electric VLSI Design System, version 9.07
+*** Layout tech: mocmos, foundry MOSIS
+*** UC SPICE *** , MIN_RESIST 4.0, MIN_CAPAC 0.1FF
+
+*** SUBCIRCUIT CMOScells__inv FROM CELL CMOScells:inv{sch}
+.SUBCKT CMOScells__inv a y
+** GLOBAL gnd
+** GLOBAL vdd
+Mnmos@0 y a gnd gnd NMOS L=0.6U W=1.8U
+Mpmos@0 vdd a y vdd PMOS L=0.6U W=3.6U
+.ENDS CMOScells__inv
+
+*** SUBCIRCUIT CMOScells__nand2 FROM CELL CMOScells:nand2{sch}
+.SUBCKT CMOScells__nand2 a b y
+** GLOBAL gnd
+** GLOBAL vdd
+Mnmos@0 net@1 a gnd gnd NMOS L=0.6U W=3.6U
+Mnmos@1 y b net@1 gnd NMOS L=0.6U W=3.6U
+Mpmos@0 vdd a y vdd PMOS L=0.6U W=3.6U
+Mpmos@1 vdd b y vdd PMOS L=0.6U W=3.6U
+.ENDS CMOScells__nand2
+
+*** SUBCIRCUIT CMOScells__nand3 FROM CELL CMOScells:nand3{sch}
+.SUBCKT CMOScells__nand3 a b c y
+** GLOBAL gnd
+** GLOBAL vdd
+Mnmos@0 net@20 a gnd gnd NMOS L=0.6U W=5.4U
+Mnmos@1 net@21 b net@20 gnd NMOS L=0.6U W=5.4U
+Mnmos@2 y c net@21 gnd NMOS L=0.6U W=5.4U
+Mpmos@0 vdd a y vdd PMOS L=0.6U W=3.6U
+Mpmos@1 vdd b y vdd PMOS L=0.6U W=3.6U
+Mpmos@2 vdd c y vdd PMOS L=0.6U W=3.6U
+.ENDS CMOScells__nand3
+
+.global gnd vdd
+
+*** TOP LEVEL CELL: CMOScells:MAC101{sch}
+Xinv@0 net@0 Q1 CMOScells__inv
+Xinv@1 net@1 Q2 CMOScells__inv
+Xinv@5 net@2 Q3 CMOScells__inv
+Xinv@6 net@3 Q4 CMOScells__inv
+Xinv@7 DIR net@36 CMOScells__inv
+Xnand2@0 EN net@36 net@2 CMOScells__nand2
+Xnand2@1 EN DIR net@3 CMOScells__nand2
+Xnand3@0 net@36 PWM EN net@0 CMOScells__nand3
+Xnand3@1 DIR PWM EN net@1 CMOScells__nand3
+
+* Spice Code nodes in cell cell 'CMOScells:MAC101{sch}'
+.include C:\ElectricBinary\CMOScells\CMOScells\C5_models.txt
+Vdd vdd 0 DC 5
+Vgnd gnd 0 DC 0
+Ven EN gnd pulse 0 5 0 0.01n 0.01n 2000u 4000u
+Vdir DIR gnd pulse 0 5 0 0.01n 0.01n 500u 1000u
+Vpwm PWM gnd pulse 0 5 0 0.01n 0.01n 250u 500u
+.trans 0 15m
+.END
